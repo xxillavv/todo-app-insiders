@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { Suspense } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import LogoutButton from "@/components/LogoutButton";
 
 const features = [
   {
@@ -36,9 +37,12 @@ const isAuthenticated = async () => (await cookies()).has("access_token");
 async function HeaderLinks() {
   if (await isAuthenticated()) {
     return (
-      <Link href="/tasks" className={`${primaryButton} px-3 py-2`}>
-        My tasks
-      </Link>
+      <>
+        <LogoutButton />
+        <Link href="/tasks" className={`${primaryButton} px-3 py-2`}>
+          My tasks
+        </Link>
+      </>
     );
   }
 
