@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { JwtModule, JwtSignOptions } from "@nestjs/jwt"
 import { AuthModule } from './auth/auth.module.js';
 import { UsersModule } from './users/users.module.js';
+import { TasksModule } from './tasks/tasks.module.js';
 
 @Module({
   imports: [PrismaModule, ConfigModule.forRoot({
@@ -17,7 +18,7 @@ import { UsersModule } from './users/users.module.js';
         expiresIn: configService.getOrThrow<JwtSignOptions['expiresIn']>('JWT_EXPIRES_IN'),
       },
     }),
-  }), AuthModule, UsersModule],
+  }), AuthModule, UsersModule, TasksModule],
   controllers: [],
   providers: [],
 })
