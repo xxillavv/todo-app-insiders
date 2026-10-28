@@ -1,0 +1,30 @@
+# AI / agent tooling
+.playwright-mcp/
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
+
+# Dependencies & build output
+node_modules/
+dist/
+.next/
+out/
+coverage/
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
