@@ -4,6 +4,12 @@ export enum TaskStatus {
   DONE = 'DONE',
 }
 
+export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
+  [TaskStatus.TODO]: 'Todo',
+  [TaskStatus.IN_PROGRESS]: 'In progress',
+  [TaskStatus.DONE]: 'Done',
+}
+
 export interface ITask {
   id: string
   title: string
