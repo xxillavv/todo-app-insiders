@@ -19,7 +19,12 @@ export class TasksService {
 
   createTask(userId: string, dto: CreateTaskDto) {
     return this.prisma.task.create({
-      data: { ...dto, userId }
+      data: {
+        title: dto.title,
+        description: dto.description,
+        status: dto.status,
+        userId
+      }
     })
   }
 
