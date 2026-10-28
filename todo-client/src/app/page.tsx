@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { Suspense } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -23,22 +25,66 @@ const previewTasks = [
   { title: "Record a demo video", status: "Todo", className: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300" },
 ];
 
+const primaryButton =
+  "rounded-lg bg-zinc-900 text-sm font-medium text-white transition hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300";
+const secondaryButton =
+  "rounded-lg border border-zinc-300 bg-white text-sm font-medium transition hover:bg-zinc-100 dark:border-zinc-700 dark:bg-transparent dark:hover:bg-zinc-800";
+
+const isAuthenticated = async () => (await cookies()).has("access_token");
+
+// Reading cookies is request-time data, so these render inside <Suspense> (cacheComponents)
+async function HeaderLinks() {
+  if (await isAuthenticated()) {
+    return (
+      <Link href="/tasks" className={`${primaryButton} px-3 py-2`}>
+        My tasks
+      </Link>
+    );
+  }
+
+  return (
+    <>
+      <Link
+        href="/login"
+        className="rounded-lg px-3 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+      >
+        Sign in
+      </Link>
+      <Link href="/register" className={`${primaryButton} px-3 py-2`}>
+        Sign up
+      </Link>
+    </>
+  );
+}
+
+async function HeroLinks() {
+  if (await isAuthenticated()) {
+    return (
+      <Link href="/tasks" className={`${primaryButton} px-5 py-2.5`}>
+        Go to my tasks
+      </Link>
+    );
+  }
+
+  return (
+    <>
+      <Link href="/register" className={`${primaryButton} px-5 py-2.5`}>
+        Get started
+      </Link>
+      <Link href="/login" className={`${secondaryButton} px-5 py-2.5`}>
+        I already have an account
+      </Link>
+    </>
+  );
+}
+
 export default function Home() {
   return (
     <>
       <Header>
-        <Link
-          href="/login"
-          className="rounded-lg px-3 py-2 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
-        >
-          Sign in
-        </Link>
-        <Link
-          href="/register"
-          className="rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
-        >
-          Sign up
-        </Link>
+        <Suspense>
+          <HeaderLinks />
+        </Suspense>
       </Header>
 
       <main className="flex-1 bg-zinc-50 dark:bg-zinc-950">
@@ -52,18 +98,9 @@ export default function Home() {
               things done.
             </p>
             <div className="flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
-              <Link
-                href="/register"
-                className="rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
-              >
-                Get started
-              </Link>
-              <Link
-                href="/login"
-                className="rounded-lg border border-zinc-300 bg-white px-5 py-2.5 text-sm font-medium transition hover:bg-zinc-100 dark:border-zinc-700 dark:bg-transparent dark:hover:bg-zinc-800"
-              >
-                I already have an account
-              </Link>
+              <Suspense>
+                <HeroLinks />
+              </Suspense>
             </div>
           </div>
 

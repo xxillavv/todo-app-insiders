@@ -6,13 +6,12 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isAuthenticated = request.cookies.has("access_token");
   const isAuthPage = AUTH_PAGES.includes(pathname);
-  const isHomePage = pathname === "/";
 
-  if (!isAuthenticated && !isAuthPage && !isHomePage) {
+  if (!isAuthenticated && !isAuthPage) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (isAuthenticated && (isAuthPage || isHomePage)) {
+  if (isAuthenticated && isAuthPage) {
     return NextResponse.redirect(new URL("/tasks", request.url));
   }
 
