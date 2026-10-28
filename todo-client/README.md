@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TODO App — Client
 
-## Getting Started
+Фронтенд застосунку для керування завданнями: реєстрація, вхід, створення, редагування, видалення завдань і фільтрація за статусом.
 
-First, run the development server:
+## Стек
+
+- **Next.js 16** (App Router) + **React 19** з React Compiler
+- **TanStack Query** — робота з API, кешування та інвалідація після мутацій
+- **axios** — HTTP-клієнт (`withCredentials` для httpOnly cookie)
+- **Tailwind CSS 4** — стилі, світла й темна тема
+
+## Запуск
+
+Потрібні Node.js 24+, pnpm і запущений [бекенд](../todo-server/README.md).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# 1. Встановити залежності
+pnpm install
+
+# 2. Створити .env.local
+cp .env.example .env.local
+
+# 3. Запустити в режимі розробки
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Застосунок буде доступний на `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Змінні оточення
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Змінна                | Опис           | Приклад                 |
+| --------------------- | -------------- | ----------------------- |
+| `NEXT_PUBLIC_API_URL` | Адреса бекенду | `http://localhost:3001` |
 
-## Learn More
+## Сторінки
 
-To learn more about Next.js, take a look at the following resources:
+| Шлях        | Опис                                                        |
+| ----------- | ----------------------------------------------------------- |
+| `/`         | Лендінг з посиланнями на вхід і реєстрацію                  |
+| `/register` | Реєстрація                                                  |
+| `/login`    | Вхід                                                        |
+| `/tasks`    | Список завдань: створення, редагування, видалення, фільтр   |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Аутентифікація
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Бекенд встановлює httpOnly cookie `access_token`, тому токен недоступний з JavaScript і не зберігається в `localStorage`. axios надсилає cookie автоматично завдяки `withCredentials: true`.
 
-## Deploy on Vercel
+`src/proxy.ts` перевіряє наявність cookie до рендеру сторінки:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- неавторизованого користувача з `/tasks` перенаправляє на `/login`;
+- авторизованого з `/login` і `/register` — на `/tasks`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Робота з API
+
+Запити згруповані за доменами в `src/hooks`. Кожен домен має три файли:
+
+- `*.service.ts` — функції запитів через axios;
+- `*.hook.ts` — `useQuery` / `useMutation` поверх сервісу;
+- `*.type(s).ts` — типи.
+
+Список завдань кешується за ключем `['tasks', status]`, тому кожен фільтр має свій кеш. Після створення, оновлення чи видалення завдання всі запити `['tasks']` інвалідуються, і список оновлюється автоматично.
+
+## Структура
+
+```
+src/
+├── app/
+│   ├── (auth)/          # /login, /register
+│   ├── tasks/           # /tasks
+│   ├── layout.tsx
+│   └── page.tsx         # лендінг
+├── components/          # TaskBoard, TaskForm, TaskItem, AuthForm, Header...
+├── hooks/
+│   ├── auth/            # register, login, logout
+│   └── task/            # CRUD завдань
+├── lib/axios.ts         # axios-інстанс і обробка помилок API
+└── proxy.ts             # редіректи залежно від авторизації
+```
+
+## Docker
+
+Увесь застосунок (PostgreSQL, бекенд і фронтенд) можна підняти однією командою з кореня репозиторію:
+
+```bash
+docker compose up --build
+```
+
+`NEXT_PUBLIC_API_URL` вшивається в бандл під час збірки, тому в Docker передається як build-аргумент.
