@@ -1,0 +1,23 @@
+enum TaskStatus {
+  TODO        @map("todo")
+  IN_PROGRESS @map("in_progress")
+  DONE        @map("done")
+
+  @@map("task_status")
+}
+
+model Task {
+  id          String     @id @default(uuid()) @map("task_id")
+  title       String     @db.VarChar(255)
+  description String?
+  status      TaskStatus @default(TODO)
+
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@map("tasks")
+}
