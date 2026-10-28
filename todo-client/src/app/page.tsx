@@ -33,7 +33,6 @@ const secondaryButton =
 
 const isAuthenticated = async () => (await cookies()).has("access_token");
 
-// Reading cookies is request-time data, so these render inside <Suspense> (cacheComponents)
 async function HeaderLinks() {
   if (await isAuthenticated()) {
     return (
