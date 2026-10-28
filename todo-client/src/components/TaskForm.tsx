@@ -100,7 +100,7 @@ const TaskForm = ({
             disabled={isPending}
             className="flex-1 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
           >
-            {isPending ? "Saving..." : "Add task"}
+            {isPending ? "Saving..." : initialValues ? "Save" : "Add task"}
           </button>
         </div>
       </div>
